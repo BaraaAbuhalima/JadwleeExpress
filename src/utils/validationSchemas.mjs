@@ -165,11 +165,42 @@ export const zajelPasswordSchema = {
     },
   },
 };
-export const zajelIdSchema = {
+export const zajelIDSchema = {
   zajelID: {
     in: "body",
     isString: {
       errorMessage: "Zajel id should be a string",
+    },
+  },
+};
+export const contactUsMailSchema = {
+  subject: {
+    in: "body",
+    isString: {
+      errorMessage: "subject most be a string",
+    },
+    notEmpty: {
+      errorMessage: "subject most not be empty",
+    },
+  },
+  message: {
+    in: "body",
+    isString: {
+      errorMessage: "message most be a string",
+    },
+    notEmpty: {
+      errorMessage: "message most not be empty",
+    },
+  },
+};
+export const zajelNameSchema = {
+  realName: {
+    in: "body",
+    isString: {
+      errorMessage: "name most be a string",
+    },
+    notEmpty: {
+      errorMessage: "name most not be empty",
     },
   },
 };

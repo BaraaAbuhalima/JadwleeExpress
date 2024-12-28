@@ -3,7 +3,6 @@ import { sendEmail } from "./send-email.mjs";
 import { LoginVerificationCode } from "../mongoose/schemas/login-verification-code.mjs";
 import { User } from "../mongoose/schemas/user.mjs";
 import httpError from "./http-error.mjs";
-const wattTimeBetweenEachVerificationRequest = parseInt(process.env.WAIT_TIME);
 export const sendVerificationCodeToEmail = async (id, response) => {
   const message = generateVerificationCode();
   let findUser;
@@ -21,7 +20,7 @@ export const sendVerificationCodeToEmail = async (id, response) => {
     if (
       lastVerificationCode &&
       Date.now() - new Date(lastVerificationCode.created_at).getTime() <
-        wattTimeBetweenEachVerificationRequest
+        parseInt(process.env.WAIT_TIME)
     ) {
       console.log(
         Date.now() - new Date(lastVerificationCode.created_at).getTime()
@@ -70,25 +69,29 @@ export const sendVerificationCodeToEmail = async (id, response) => {
   });
 };
 const getRemainingTime = (createdTime) => {
+  console.log(createdTime);
+  console.log(parseInt(process.env.WAIT_TIME));
+  console.log(parseInt(process.env.WAIT_TIME));
+  console.log(new Date(createdTime).getTime());
   return Math.ceil(
-    (wattTimeBetweenEachVerificationRequest -
+    (parseInt(process.env.WAIT_TIME) -
       Date.now() +
       new Date(createdTime).getTime()) /
       1000
   ) >= 0
     ? Math.ceil(
-        (wattTimeBetweenEachVerificationRequest -
+        (parseInt(process.env.WAIT_TIME) -
           Date.now() +
           new Date(createdTime).getTime()) /
           1000
       )
-    : wattTimeBetweenEachVerificationRequest / 1000;
+    : parseInt(process.env.WAIT_TIME) / 1000;
 };
 export const sendUserIdCookie = (user, response) => {
   response.cookie(process.env.USER_ID_COOKIE, user.id, {
-    secure: false,
+    secure: true,
     httpOnly: false,
-    sameSite: process.env.SESSION_COOKIE_SAME_SITE,
+    sameSite: "none",
     signed: true,
   });
 };

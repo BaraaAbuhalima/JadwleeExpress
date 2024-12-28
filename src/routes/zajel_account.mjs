@@ -6,13 +6,15 @@ import {
 import { matchedData } from "express-validator";
 import { User } from "../mongoose/schemas/user.mjs";
 import {
-  zajelIdSchema,
+  zajelIDSchema,
   zajelPasswordSchema,
 } from "../utils/validationSchemas.mjs";
 const router = Router();
+
 router.post(
-  "/api/user/zajel/password",
+  "/api/user/zajel",
   checkIsAuthenticatedMiddleware,
+  checkSchemaMiddleware(zajelIDSchema),
   checkSchemaMiddleware(zajelPasswordSchema),
   async (request, response) => {
     const data = matchedData(request);
@@ -20,6 +22,7 @@ router.post(
       await User.updateOne(
         { _id: request.user._id },
         {
+          zajelID: data.zajelID,
           zajelPassword: data.zajelPassword,
         }
       );
@@ -27,27 +30,19 @@ router.post(
       return response.sendStatus(500);
     }
 
-    return response.status(200).send(["Password Changed Successfully"]);
+    return response
+      .status(200)
+      .send(["Zajel Id & Password Changed Successfully"]);
   }
 );
-router.post(
-  "/api/user/zajel/id",
+router.get(
+  "/api/user/zajel",
   checkIsAuthenticatedMiddleware,
-  checkSchemaMiddleware(zajelIdSchema),
-  async (request, response) => {
-    const data = matchedData(request);
-    try {
-      await User.updateOne(
-        { _id: request.user._id },
-        {
-          zajelID: data.zajelID,
-        }
-      );
-    } catch (err) {
-      return response.sendStatus(500);
-    }
-
-    return response.status(200).send(["Zajel Id Changed Successfully"]);
+  (request, response) => {
+    const user = request.user;
+    return response
+      .status(200)
+      .send({ zajelID: user.zajelID, zajelPassword: user.zajelPassword });
   }
 );
 export default router;

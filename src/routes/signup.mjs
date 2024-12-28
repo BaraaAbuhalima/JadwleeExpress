@@ -19,7 +19,7 @@ router.post(
 
     data.password = hashPassword(data.password);
     data.username = data.username.trim().toLowerCase();
-
+    data.email = data.email.toLowerCase();
     let user;
     try {
       user = await User.findOne({ email: data.email });

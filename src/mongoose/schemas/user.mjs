@@ -55,6 +55,9 @@ const USerSchema = new mongoose.Schema({
   Schedule: {
     type: mongoose.Schema.Types.Mixed,
   },
+  realName: {
+    type: mongoose.Schema.Types.String,
+  },
 });
 USerSchema.plugin(AutoIncrement, { inc_field: "userNumber" });
 export const User = mongoose.model("User", USerSchema);

@@ -12,14 +12,15 @@ const sendEmail = async (toEmail, text, subject) => {
       },
     });
     const info = await transporter.sendMail({
-      // from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
       to: toEmail,
       subject: subject,
       text: text,
       // html: "<b>Hello worldfsdfdsfd?</b>", // html body
     });
     console.log("Message sent: %s", info.messageId);
+    return true;
   } catch (err) {
+    return false;
     console.log(err);
   }
 };

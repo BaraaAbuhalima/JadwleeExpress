@@ -8,10 +8,12 @@ const verifyYourEmail = "Pleas verify Your Email First ";
 passport.use(
   new Strategy({ usernameField: "email" }, async (email, password, done) => {
     try {
-      // console.log(`username: ${email}`);
+      console.log(`username: ${email}`);
       // console.log(`password : ${password}`);
+      email = email.toLowerCase().trim();
+
       const findUser = await User.findOne({ email });
-      
+
       const isAuthenticated =
         findUser && comparePassword(password, findUser.password);
       if (!isAuthenticated)

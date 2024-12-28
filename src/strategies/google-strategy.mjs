@@ -16,12 +16,12 @@ passport.use(
         const email = profile._json.email;
         const googleID = profile._json.sub;
         const displayName = profile.displayName;
-        const googlePicture = profile._json.picture;
+        // const googlePicture = profile._json.picture;
         const username = await convertDisplaynameToUsername(displayName);
         const findUser = await User.findOne({ email: email });
         const googleStrategy = {
           id: googleID,
-          picture: googlePicture,
+          // picture: googlePicture,
         };
         if (findUser && !findUser.strategies.includes("Google")) {
           await User.updateOne(

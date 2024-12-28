@@ -7,7 +7,7 @@ router.get(
   (request, response) => {
     console.log("inside auth");
     console.log(request.user);
-    // response.status(200).send("google");
+    response.status(200).send("google");
   }
 );
 /////gonna replace it later

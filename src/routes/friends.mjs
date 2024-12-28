@@ -1,13 +1,18 @@
 import { Router } from "express";
 import { checkIsAuthenticatedMiddleware } from "../utils/middlewares.mjs";
 import { User } from "../mongoose/schemas/user.mjs";
+import { fileURLToPath } from "url";
 import {
   acceptFriend,
   addFriend,
+  filterFriends,
   removeFriend,
 } from "../utils/friends_helper.mjs";
 import httpError from "../utils/http-error.mjs";
 import { createErrorResponse } from "../utils/Errors.mjs";
+import path from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = Router();
 
 router.get(
@@ -15,26 +20,11 @@ router.get(
   checkIsAuthenticatedMiddleware,
   async (request, response) => {
     const user = request.user;
-    // ///////Needs Optimized Query////////////////////
-
-    const filteredFriends = [];
-
-    Object.keys(user.friends).forEach((id) => {
-      if (user.friends[id] === "F") {
-        filteredFriends.push(id);
-      }
-    });
-    const friends = await Promise.all(
-      filteredFriends.map(async (id) => {
-        const findUser = await User.findById(id);
-        return {
-          username: findUser.username,
-          displayName: findUser.displayName,
-          userNumber: findUser.userNumber,
-        };
-      })
-    );
-    console.log(friends);
+    const friends = await filterFriends(user, "F", [
+      "username",
+      "displayName",
+      "userNumber",
+    ]);
     return response.status(200).send(friends);
   }
 );
@@ -193,6 +183,32 @@ router.post(
 
     await acceptFriend(request.user._id, findUser._id);
     response.status(200).send(["You are now friends" + findUser.username]);
+  }
+);
+///////////////
+router.get(
+  "/api/user/friend/profilePicture/:id",
+  checkIsAuthenticatedMiddleware,
+  async (request, response) => {
+    const user = request.user;
+    const id = request.params.id;
+    const friend = await User.findOne({ userNumber: id });
+    if (!user.friends[friend.id]) {
+      return response.status(404).send("why do you want to see this photo???");
+    }
+    console.log(friend);
+    try {
+      const b = friend.photo.buffer.toString("base64");
+      const imageBuffer = Buffer.from(b, "base64");
+      response.set("Content-Type", "image/webp").send(imageBuffer);
+      return user;
+    } catch (err) {
+      console.log(path.join(__dirname, "public", "noProfileImage.jpeg"));
+      console.log(err);
+      response
+        .status(200)
+        .sendFile(path.join(__dirname, "../../public", "noProfileImage.jpeg"));
+    }
   }
 );
 export default router;

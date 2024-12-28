@@ -52,3 +52,24 @@ export const removeFriend = async (firstFriend, secondFriend) => {
     console.log(err);
   }
 };
+export const filterFriends = async (user, criteria, fields) => {
+  // ///////Needs Optimized Query////////////////////
+  const filteredFriends = [];
+
+  Object.keys(user.friends).forEach((id) => {
+    if (user.friends[id] === criteria) {
+      filteredFriends.push(id);
+    }
+  });
+
+  const friends = await Promise.all(
+    filteredFriends.map(async (id) => {
+      const findUser = await User.findById(id);
+      return fields.reduce((acc, ele) => {
+        acc[ele] = findUser[ele];
+        return acc;
+      }, {});
+    })
+  );
+  return friends;
+};
