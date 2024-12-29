@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 const corsOptions = {
-  origin: ["https://localhost:5123", "https://127.0.0.1:5500"],
+  origin: ["http://localhost:5173", "http://localhost:5123"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
@@ -30,10 +30,9 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({ client: mongoose.connection.getClient() }),
     cookie: {
-      // maxAge: parseInt(process.env.SESSION_COOKIE_MAX_AGE),
-      secure: true,
-      httpOnly: true,
-      sameSite: "none",
+      secure: process.env.SESSION_COOKIE_SECURE,
+      httpOnly: process.env.SESSION_COOKIE_HTTP_ONLY,
+      sameSite: process.env.SESSION_COOKIE_SAME_SITE,
     },
   })
 );
