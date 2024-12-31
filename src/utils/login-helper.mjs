@@ -89,8 +89,8 @@ const getRemainingTime = (createdTime) => {
 };
 export const sendUserIdCookie = (user, response) => {
   response.cookie(process.env.USER_ID_COOKIE, user.id, {
-    secure: process.env.SESSION_COOKIE_SECURE,
-    httpOnly: process.env.SESSION_COOKIE_HTTP_ONLY,
+    secure: process.env.SESSION_COOKIE_SECURE === "true",
+    httpOnly: process.env.SESSION_COOKIE_HTTP_ONLY === "true",
     sameSite: process.env.SESSION_COOKIE_SAME_SITE,
     signed: true,
   });

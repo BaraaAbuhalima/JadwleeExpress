@@ -14,7 +14,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5123"],
+  origin: (_, done) => {
+    done(null, true);
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
@@ -30,9 +32,13 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({ client: mongoose.connection.getClient() }),
     cookie: {
-      secure: process.env.SESSION_COOKIE_SECURE,
-      httpOnly: process.env.SESSION_COOKIE_HTTP_ONLY,
-      sameSite: process.env.SESSION_COOKIE_SAME_SITE,
+      secure: true, // Same as the first: send only over HTTPS
+      httpOnly: false, // Same as the first: inaccessible to JavaScript
+      sameSite: "none", // Same as the first: allow cross-origin requests
+      path: "/", // Same as the first: accessible to all routes
+      signed: true, // Ensures cookies are signed (like the first)
+      maxAge: 233333333,
+      domain: "localhost:5123",
     },
   })
 );
@@ -57,9 +63,9 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "../../app/dist")));
 
 // Fallback for any other routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../app/dist", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../../app/dist", "index.html"));
+// });
 app.listen(PORT, () => {
   console.log(`Running  on Port ${PORT}`);
 });

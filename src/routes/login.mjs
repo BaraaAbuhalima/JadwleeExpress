@@ -37,7 +37,6 @@ router.post(
         messageCode: info.customStatusCode,
         errors: [errors],
       };
-      console.log(user, info);
       if (!user) {
         return response.status(401).send(responseMessage);
       }
@@ -45,6 +44,7 @@ router.post(
         sendUserIdCookie(user, response);
         return response.status(401).send(responseMessage);
       }
+
       request.logIn(user, (err) => {
         if (err) {
           return response.sendStatus(500);
